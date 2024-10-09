@@ -72,10 +72,10 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                   leading: Image.network(video.thumbnails.standardResUrl),
                   title: Text(video.title),
                   subtitle: Text(video.author),
-                  onTap: () {
+                  onTap: () async{
                     // Pass the video URL back or do something with it
                     String videoUrl = video.url;
-                    Navigator.push(context, MaterialPageRoute(builder: (_)=>MyMusicPlayer(video : video))); // Pass back the video URL
+                    await Navigator.push(context, MaterialPageRoute(builder: (_)=>MyMusicPlayer(video : video))); // Pass back the video URL
                   },
                 );
               },

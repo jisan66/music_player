@@ -19,6 +19,7 @@ class _MyMusicPlayerState extends State<MyMusicPlayer> {
       "https://img.freepik.com/free-vector/musical-pentagram-sound-waves-notes-background_1017-33911.jpg"; // Thumbnail
   bool loaded = false;
   bool playing = false;
+  String songName = "";
 
   // Extract and play audio
   Future<void> _extractAudioAndPlay() async {
@@ -58,6 +59,8 @@ class _MyMusicPlayerState extends State<MyMusicPlayer> {
   void initState() {
     super.initState();
     youtubeUrl = widget.video.url;
+    songName = widget.video.title;
+    thumbnailImgUrl = widget.video.thumbnails.standardResUrl;
     _extractAudioAndPlay(); // Extract and play audio from YouTube
   }
 
@@ -75,30 +78,74 @@ class _MyMusicPlayerState extends State<MyMusicPlayer> {
       body: SafeArea(
         child: Stack(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                thumbnailImgUrl,
-                height: size.height,
-                width: size.width,
-                fit: BoxFit.cover,
+          Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.bottomLeft,
+                  end: Alignment(1, 0.8),
+                  colors: <Color>[
+                    Color(0xff1f005c),
+                    Color(0xff5b0060),
+                    Color(0xff870160),
+                    Color(0xffac255e),
+                    Color(0xffca485c),
+                    Color(0xffe16b5c),
+                    Color(0xfff39060),
+                    Color(0xffffb56b),
+                  ], // Gradient from https://learnui.design/tools/gradient-generator.html
+                  tileMode: TileMode.mirror,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Center(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Stack(
+                        children: [
+                          Image.network(
+                            thumbnailImgUrl,
+                            height: size.height,
+                            width: size.width,
+                            fit: BoxFit.contain,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topRight,
+                                end: const Alignment(0.8, 1),
+                                colors: <Color>[
+                                  const Color(0xffffffff).withOpacity(0.1),
+                                  const Color(0xff000000).withOpacity(.5),
+                                  const Color(0xffffffff).withOpacity(0.1),
+                                ], // Gradient from https://learnui.design/tools/gradient-generator.html
+                                tileMode: TileMode.mirror,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                  ),
+
+                ],
               ),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
-                  padding: EdgeInsets.all(8.0),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Musix Player",
+                      const Text("Musix Player",
                           style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w400,
                               color: Colors.black54)),
-                      Text("Song Name - YouTube Audio",
-                          style: TextStyle(
+                      Text("Song Name - $songName",
+                          style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
                               color: Colors.black54)),
