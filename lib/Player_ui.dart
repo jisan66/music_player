@@ -20,6 +20,7 @@ class _MyMusicPlayerState extends State<MyMusicPlayer> {
   bool loaded = false;
   bool playing = false;
   String songName = "";
+  bool isLoading = false;
 
   // Extract and play audio
   Future<void> _extractAudioAndPlay() async {
@@ -40,14 +41,12 @@ class _MyMusicPlayerState extends State<MyMusicPlayer> {
     }
   }
 
-  @override
   void playMusic() async {
     setState(() {
       playing = true;
     });
     await player.play();
   }
-  @override
   void pauseMusic() async {
     setState(() {
       playing = false;
@@ -58,10 +57,13 @@ class _MyMusicPlayerState extends State<MyMusicPlayer> {
   @override
   void initState() {
     super.initState();
+    isLoading = true;
     youtubeUrl = widget.video.url;
     songName = widget.video.title;
     thumbnailImgUrl = widget.video.thumbnails.standardResUrl;
-    _extractAudioAndPlay(); // Extract and play audio from YouTube
+    _extractAudioAndPlay();
+    isLoading = false;
+    setState(() {});// Extract and play audio from YouTube
   }
 
   @override
@@ -98,7 +100,7 @@ class _MyMusicPlayerState extends State<MyMusicPlayer> {
               ),
               child: Stack(
                 children: [
-                  Center(
+                  isLoading ? const Center(child: CircularProgressIndicator(),) : Center(
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: Stack(
@@ -137,18 +139,35 @@ class _MyMusicPlayerState extends State<MyMusicPlayer> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Text("Musix Player",
-                          style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.black54)),
-                      Text("Song Name - $songName",
-                          style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.black54)),
+                      const Card(
+                        elevation: 4,
+                        color: Color(0xffca485c),
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text("Musix Player",
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.white)),
+                        ),
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: Card(
+                          elevation: 4,
+                          color: const Color(0xffca485c),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text("Song Name - $songName",
+                                style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.white)),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),

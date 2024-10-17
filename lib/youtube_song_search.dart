@@ -13,14 +13,14 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
   bool _isLoading = false;
   final YoutubeExplode _youtubeExplode = YoutubeExplode();
 
-  Future<void> _searchYouTube() async {
+  Future<void> _searchYouTube(String value) async {
     setState(() {
       _isLoading = true;
     });
 
     try {
-      final searchQuery = _searchController.text;
-      final searchResults = await _youtubeExplode.search.getVideos(searchQuery);
+      // final searchQuery = _searchController.text;
+      final searchResults = await _youtubeExplode.search.getVideos(value);
 
       setState(() {
         _videos = searchResults.toList();
@@ -44,39 +44,81 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('YouTube Search'),
+        backgroundColor: Colors.blue,
+        title: const Text('YouTube Search...', style: TextStyle(color: Colors.white),),
       ),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextField(
+            child: TextFormField(
+              onChanged: (value){
+                _searchYouTube(value.toString());
+              },
               controller: _searchController,
               decoration: InputDecoration(
-                labelText: 'Search YouTube',
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: _searchYouTube,
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.grey
+                  )
+                ),
+                fillColor: Colors.grey.withOpacity(.1),
+                filled: true,
+                errorBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.grey
+                  )
+                ),
+                border: const OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.red
+                  )
+                ),
+                labelText: 'Search song...',
+                suffixIcon: Card(
+                  elevation: 4,
+                  child: IconButton(
+                    icon: const Icon(Icons.search),
+                    // onPressed: _searchYouTube,
+                    onPressed: (){},
+                  ),
                 ),
               ),
             ),
           ),
           Expanded(
             child: _isLoading
-                ? Center(child: CircularProgressIndicator())
-                : ListView.builder(
+                ? const Center(child: CircularProgressIndicator())
+                : _videos.isEmpty ? const Center(child: Text("No Song Found!"),) : ListView.builder(
               itemCount: _videos.length,
               itemBuilder: (context, index) {
                 final video = _videos[index];
-                return ListTile(
-                  leading: Image.network(video.thumbnails.standardResUrl),
-                  title: Text(video.title),
-                  subtitle: Text(video.author),
-                  onTap: () async{
-                    // Pass the video URL back or do something with it
-                    String videoUrl = video.url;
-                    await Navigator.push(context, MaterialPageRoute(builder: (_)=>MyMusicPlayer(video : video))); // Pass back the video URL
-                  },
+                return Card(
+                  color: Colors.blue.shade50,
+                  child: ListTile(
+                    leading: SizedBox(
+                      width: 50, // Set the width to match the expected image size
+                      height: 50, // Set the height to match the expected image size
+                      child: Image.network(
+                        video.thumbnails.standardResUrl,
+                        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                          if (loadingProgress == null) {
+                            return child; // Image is fully loaded
+                          } else {
+                            return const Icon(Icons.image_not_supported, size: 30, color: Colors.grey); // Icon while loading
+                          }
+                        },
+                        errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                          return const Icon(Icons.broken_image_outlined, size: 30, color: Colors.red); // Icon when error loading image
+                        },
+                      ),
+                    ),
+                    title: Text(video.title),
+                    subtitle: Text(video.author),
+                    onTap: () async {
+                      await Navigator.push(context, MaterialPageRoute(builder: (_) => MyMusicPlayer(video: video))); // Navigate with video
+                    },
+                  ),
                 );
               },
             ),
