@@ -75,13 +75,10 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                   )
                 ),
                 labelText: 'Search song...',
-                suffixIcon: Card(
-                  elevation: 4,
-                  child: IconButton(
-                    icon: const Icon(Icons.search),
-                    // onPressed: _searchYouTube,
-                    onPressed: (){},
-                  ),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.search),
+                  // onPressed: _searchYouTube,
+                  onPressed: (){},
                 ),
               ),
             ),
